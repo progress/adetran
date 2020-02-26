@@ -18,27 +18,18 @@ buildscript {
 
 apply plugin: 'oe.espresso.latte'
 
-def DLC = "${System.env.DLC}"
-
 abl {
-    dlcHome = new File(DLC)
+    dlcHome = new File("${System.env.DLC}")
 }
 
-/**
-create kit db
-*/
-task createKitDB(type: CreateDatabase) {
-    dbName = "kit"
-    blockSize = 8
-    destDir = "${buildDir}/db/kit"
-    schemaFile = "data/xlkit.df"
-}
+def xlatedb = "${buildDir}/db/xlate/xlatedb.db"
+def kitdb = "${buildDir}/db/kit/kit.db"
 
 task extractADEcomm {
 
     def extractables = ['adecomm/toolrun.i', 'adecomm/toolmenu.i', 'adecomm/toolsupp.i']
 
-    inputs.files file("${DLC}/src/adecomm.pl")
+    inputs.files file("${System.env.DLC}/src/adecomm.pl")
 
     extractables.each {
         outputs.files file("${buildDir}/adecomm/toolmenu.i")
@@ -56,7 +47,7 @@ task extractADEcomm {
             if (!new File("${buildDir}/${fileName}").exists()) {
                 exec {
                     workingDir "${buildDir}"
-                    commandLine "${DLC}/bin/prolib", "${DLC}/src/adecomm.pl", '-extract', fileName
+                    commandLine "${System.env.DLC}/bin/prolib", "${System.env.DLC}/src/adecomm.pl", '-extract', fileName
                 }
             }
         }
@@ -64,19 +55,70 @@ task extractADEcomm {
     
 }
 
+
+/**
+create kit db
+*/
+task createKitDB(type: CreateDatabase) {
+    dbName = "kit"
+    blockSize = 8
+    destDir = "${buildDir}/db/kit"    
+
+    doLast {
+        convertCodePage (kitdb)
+    }
+}
+
 /**
 define connection to kitdb
  */
 task connectKitDB(type: DBConnection) {
-    dependsOn createKitDB
     doFirst {
         mkdir "${buildDir}/db/kit"
     }
-    dependsOn createKitDB
     dbName = 'kit'
     dbDir = "${buildDir}/db/kit"
     id = 'kit'
     singleUser = true
+}
+
+task loadTranSchemaToKitDb(type: LoadSchema)  {
+    dependsOn connectKitDB
+    source 'data/'
+    include '_tran.df'
+    refid = "kit"
+
+    doLast {
+        indexBuild(kitdb)
+    }
+    
+}
+
+task loadKitSchemaToKitDb(type: LoadSchema)  {
+    dependsOn connectKitDB
+    source 'data/'
+    include 'xlkit.df'
+    refid = "kit"
+}
+
+task createKit() {
+    dependsOn createKitDB
+    dependsOn loadTranSchemaToKitDb
+    dependsOn loadKitSchemaToKitDb
+    dependsOn connectKitDB
+}
+
+def convertCodePage(String db) {
+    exec {
+        commandLine "${System.env.DLC}/bin/_proutil", "-z3", db, "-C", "convchar", "convert", "undefined", "-G", "0"
+        standardInput = new ByteArrayInputStream("y\r\n".getBytes())
+    }
+}
+
+def indexBuild(String db) {
+    exec {
+        commandLine "${System.env.DLC}/bin/_proutil", "-z3", db, "-C", "idxbuild", "all", "-G", "0"
+    }
 }
 
 /**
@@ -89,33 +131,61 @@ task createXLateDB(type: CreateDatabase) {
     dbName = "xlatedb"
     blockSize = 8
     destDir = "${buildDir}/db/xlate"
-    schemaFile = "data/xlproj.df"
+
+    doLast {
+       convertCodePage(xlatedb)
+    }    
 }
+
 
 /**
 define connection to xlatedb
  */
 task connectXLateDB(type: DBConnection) {
-    dependsOn createXLateDB
     mkdir "${buildDir}/db/xlate"
-    dependsOn createKitDB
     dbName = 'xlatedb'
     dbDir = "${buildDir}/db/xlate"
     id = 'xlate'
     singleUser = true
 }
 
+task loadTranSchemaToXlateDb(type: LoadSchema)  {
+    dependsOn connectXLateDB
+    source 'data/'
+    include '_tran.df'
+    refid = "xlate"
+
+    doLast {
+        indexBuild(xlatedb)
+    }
+}
+
+task loadKitSchemaToXlateDb(type: LoadSchema)  {
+    dependsOn connectXLateDB
+    source 'data/'
+    include 'xlproj.df'
+    refid = "xlate"
+}
+
+
+task createXlate () {
+    dependsOn createXLateDB
+    dependsOn loadTranSchemaToXlateDb
+    dependsOn loadKitSchemaToXlateDb
+    dependsOn connectXLateDB
+}
+
 
 
 task compileCode(type: CompileAblTask) {
-    dependsOn connectKitDB 
-    dependsOn connectXLateDB
+    dependsOn createKit 
+    dependsOn createXlate
     dependsOn extractADEcomm
     source('src/main/abl')
     include('**/*.p')
     compileUnderscore = true
     destinationDir = file("${buildDir}/rcode")
-    propath = files('src/main/abl', "${DLC}/gui/adecomm.pl", "${buildDir}" )
+    propath = files('src/main/abl', "${buildDir}" )
 
     dbConnections << 'kit'
     dbConnections << 'xlate'
@@ -125,5 +195,8 @@ task build {
     dependsOn compileCode
 }
 
+task clean {
+    delete file ("${buildDir}")
+}
 
 defaultTasks 'build'
