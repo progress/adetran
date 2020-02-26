@@ -10,4 +10,7 @@ build
 # Ignore visual studio code configuration
 .vscode
 
+# ignore clearcase files
+.copyarea.db
+
 
