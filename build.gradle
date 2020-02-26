@@ -1,0 +1,129 @@
+
+import oe.espresso.latte.*
+
+
+buildscript {
+
+    repositories {
+        flatDir {
+          dirs '../latte/build/libs'
+        }
+    }
+
+
+  dependencies {
+    classpath "oe.espresso.latte:latte:0.2.5"
+  }
+}
+
+apply plugin: 'oe.espresso.latte'
+
+def DLC = "${System.env.DLC}"
+
+abl {
+    dlcHome = new File(DLC)
+}
+
+/**
+create kit db
+*/
+task createKitDB(type: CreateDatabase) {
+    dbName = "kit"
+    blockSize = 8
+    destDir = "${buildDir}/db/kit"
+    schemaFile = "data/xlkit.df"
+}
+
+task extractADEcomm {
+
+    def extractables = ['adecomm/toolrun.i', 'adecomm/toolmenu.i', 'adecomm/toolsupp.i']
+
+    inputs.files file("${DLC}/src/adecomm.pl")
+
+    extractables.each {
+        outputs.files file("${buildDir}/adecomm/toolmenu.i")
+    }
+
+    doFirst {
+        mkdir "${buildDir}/adecomm"
+    }
+
+    doLast {
+
+        extractables.each {
+            def fileName = it
+            // if file already exists...prolib crashes trying to overwrite the file
+            if (!new File("${buildDir}/${fileName}").exists()) {
+                exec {
+                    workingDir "${buildDir}"
+                    commandLine "${DLC}/bin/prolib", "${DLC}/src/adecomm.pl", '-extract', fileName
+                }
+            }
+        }
+    }    
+    
+}
+
+/**
+define connection to kitdb
+ */
+task connectKitDB(type: DBConnection) {
+    dependsOn createKitDB
+    doFirst {
+        mkdir "${buildDir}/db/kit"
+    }
+    dependsOn createKitDB
+    dbName = 'kit'
+    dbDir = "${buildDir}/db/kit"
+    id = 'kit'
+    singleUser = true
+}
+
+/**
+create the xlatedb
+ */
+task createXLateDB(type: CreateDatabase) {
+    doFirst {
+        mkdir "${buildDir}/db/xlate"
+    }
+    dbName = "xlatedb"
+    blockSize = 8
+    destDir = "${buildDir}/db/xlate"
+    schemaFile = "data/xlproj.df"
+}
+
+/**
+define connection to xlatedb
+ */
+task connectXLateDB(type: DBConnection) {
+    dependsOn createXLateDB
+    mkdir "${buildDir}/db/xlate"
+    dependsOn createKitDB
+    dbName = 'xlatedb'
+    dbDir = "${buildDir}/db/xlate"
+    id = 'xlate'
+    singleUser = true
+}
+
+
+
+task compileCode(type: CompileAblTask) {
+    dependsOn connectKitDB 
+    dependsOn connectXLateDB
+    dependsOn extractADEcomm
+    source('src/main/abl')
+    include('**/*.p')
+    compileUnderscore = true
+    destinationDir = file("${buildDir}/rcode")
+    propath = files('src/main/abl', "${DLC}/gui/adecomm.pl", "${buildDir}" )
+
+    dbConnections << 'kit'
+    dbConnections << 'xlate'
+}
+
+task build {
+    dependsOn compileCode
+}
+
+
+defaultTasks 'build'
