@@ -11,11 +11,11 @@ You will need to ensure you are in a proenv session so that $DLC environment var
 
 Use the following command line to perform the build.
 
-'''
+```
 
 ./gradlew build
 
-'''
+```
 
 Once the source code is built you will find the output in the build directory. The primary build output is build/tranman.pl and build/resources.  The build/resources folder contains the images that are neededd.  The build also generates build/db/kit/kit.db and build/db/xlate/xlatedb.db.
 
