@@ -1,22 +1,11 @@
 
 import oe.espresso.latte.*
 
-
-buildscript {
-
-    repositories {
-        flatDir {
-          dirs '../latte/build/libs'
-        }
-    }
-
-
-  dependencies {
-    classpath "oe.espresso.latte:latte:0.2.5"
-  }
+plugins {
+    id 'oe.espresso.latte' version '0.2.5'
 }
 
-apply plugin: 'oe.espresso.latte'
+apply plugin: 
 
 abl {
     dlcHome = new File("${System.env.DLC}")
