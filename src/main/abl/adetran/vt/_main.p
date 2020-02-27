@@ -147,14 +147,14 @@ Variables:    Key variables include (see adetran/vt/_shrvar.i)
 */          
 
 /* ************************* LICENSE CHECK *****************************/
-DEFINE VARIABLE _VT_license AS INTEGER NO-UNDO.
-ASSIGN _VT_license = GET-LICENSE ("VISUAL-TRANSLATOR":U).
-IF _VT_license NE 0 THEN 
-DO:
-   MESSAGE "A license for the Visual Translator is not available."
-      VIEW-AS ALERT-BOX INFORMATION BUTTONS OK.
-   STOP.
-END.
+// DEFINE VARIABLE _VT_license AS INTEGER NO-UNDO.
+// ASSIGN _VT_license = GET-LICENSE ("VISUAL-TRANSLATOR":U).
+// IF _VT_license NE 0 THEN 
+// DO:
+//    MESSAGE "A license for the Visual Translator is not available."
+//       VIEW-AS ALERT-BOX INFORMATION BUTTONS OK.
+//    STOP.
+// END.
 
 RUN adecomm/_setcurs.p ("WAIT":U).
 CREATE WIDGET-POOL.
