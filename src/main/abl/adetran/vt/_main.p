@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2000,2012-2013 by Progress Software Corporation. All rights    *
+* Copyright (C) 2000,2012-2020 by Progress Software Corporation. All rights    *
 * reserved. Prior versions of this work may contain portions         *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -830,19 +830,10 @@ DO:
                                           INPUT PrFlag,
                                           INPUT Mode).
     END.  /* If CurrentMode = 4 (Statistics) */
-    ELSE IF PROCESS-ARCHITECTURE = 32 THEN DO:
-      /* Print Screen is only available in the 32-bit Windows client.
-      ** When running in the 64-bit client the Print button/menu will
-      ** be disabled unless CurrentMode = 4.
-      */
-      RUN adetran/common/_prtscrn.p.
-    END.
   END.  /* Else not Help */
 END.  /* On Choose of BtnPrint */
 
 PROCEDURE FilePrint.
-    run adecomm/_setcurs.p ("wait":U).
-    run adetran/common/_prtscrn.p.
 END PROCEDURE.
 
 /*
@@ -895,19 +886,12 @@ ON CHOOSE OF MENU-ITEM mPaste
    run ProcPaste(focus).
      
 ON MENU-DROP OF MENU mFile DO:
-  /* Print Screen is only available in the 32-bit Windows client.
-  ** When running in the 64-bit client the Print button/menu will
-  ** be disabled unless CurrentMode = 4.
-  */
-  IF PROCESS-ARCHITECTURE = 32 THEN DO:
-    ASSIGN MENU-ITEM mPrintScreen:LABEL IN MENU mFile =
-	   IF CurrentMode = 4 THEN "&Print..." ELSE "&Print Screen".
-  END.
-  ELSE DO:
+    /* Print Screen is no longer available.
+    ** The Print button/menu will be disabled unless CurrentMode = 4.
+    */
     ASSIGN MENU-ITEM mPrintScreen:LABEL IN MENU mFile = "&Print..."
            MENU-ITEM mPrintScreen:SENSITIVE IN MENU mFile =
              IF CurrentMode = 4 THEN TRUE ELSE FALSE.
-  END.
 END.
 
 on menu-drop of menu medit DO:

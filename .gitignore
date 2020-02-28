@@ -11,6 +11,4 @@ build
 .vscode
 
 # ignore clearcase files
-.copyarea.db
-
-
+*/.copyarea.db

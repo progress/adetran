@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2000,2012 by Progress Software Corporation. All rights    *
+* Copyright (C) 2000,2012,2020 by Progress Software Corporation. All rights    *
 * reserved. Prior versions of this work may contain portions         *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -728,13 +728,6 @@ ON CHOOSE OF BtnPrint IN FRAME MainFrame OR
                                          INPUT PrFlag,
                                          INPUT Mode).
     END.
-    ELSE IF PROCESS-ARCHITECTURE = 32 THEN DO:
-      /* Print Screen is only available in the 32-bit Windows client.
-      ** When running in the 64-bit client the Print button/menu will
-      ** be disabled unless CurrentMode = 5.
-      */
-      RUN adetran/common/_prtscrn.p.
-    END.
   END.
 END.
 
@@ -814,19 +807,12 @@ ON MOUSE-SELECT-DOWN OF BtnPaste IN FRAME MainFrame OR
 END.
 
 ON MENU-DROP OF MENU mFile DO:
-  /* Print Screen is only available in the 32-bit Windows client.
-  ** When running in the 64-bit client the Print button/menu will
-  ** be disabled unless CurrentMode = 5.
-  */
-  IF PROCESS-ARCHITECTURE = 32 THEN DO:
-    ASSIGN MENU-ITEM mPrintScreen:LABEL IN MENU mFile =
-       IF CurrentMode = 5 THEN "&Print..." ELSE "&Print Screen".
-  END.
-  ELSE DO:
+    /* Print Screen is no longer available.
+    ** The Print button/menu will be disabled unless CurrentMode = 5.
+    */
     ASSIGN MENU-ITEM mPrintScreen:LABEL IN MENU mFile = "&Print..."
            MENU-ITEM mPrintScreen:SENSITIVE IN MENU mFile =
              IF CurrentMode = 5 THEN TRUE ELSE FALSE.
-  END.
 END.
 
 ON MENU-DROP OF MENU medit DO:
