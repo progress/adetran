@@ -2,10 +2,8 @@
 import oe.espresso.latte.*
 
 plugins {
-    id 'oe.espresso.latte' version '0.2.5'
+    id 'oe.espresso.latte' version '0.2.6'
 }
-
-apply plugin: 
 
 abl {
     dlcHome = new File("${System.env.DLC}")
