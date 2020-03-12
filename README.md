@@ -21,9 +21,9 @@ Once the source code is built you will find the output in the build directory. T
 
 # Running
 
-Since both Translation Manager and Visual Translator are GUI only applications, you will need to compile and build on Windows.  You can run the visual translator tool or the translation manager application using prowin.  You will need to configure the PROPATH to include both the build/tranma.pl and build/resources folder.
+Since both Translation Manager and Visual Translator are GUI only applications, you will need to compile and build on Windows.  You can run the Visual Translator tool or the Translation Manager application using prowin.  You will need to configure the PROPATH to include both the build/tranman.pl and build/resources folder.  
 
-Once you have configured the PROPATH you can launch the application using the sample startup programs provided for both Visual Translator and Translation Manager application.
+You can launch the application using the sample startup programs provided for both Visual Translator and Translation Manager application.  The launcher scripts below configure the PROPATH to include the needed entries.
 
 To launch visual translator:
 ```
