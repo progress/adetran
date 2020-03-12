@@ -91,15 +91,6 @@ Variables:    Key variables include:
 
 &GLOBAL-DEFINE Database_Connections 17
 
-/* ************************* LICENSE CHECK *****************************/
-// DEFINE VARIABLE _TM_license AS INTEGER NO-UNDO.
-// ASSIGN _TM_license = GET-LICENSE ("TRANSLATION-MGR":U).
-// IF _TM_license NE 0 THEN
-// DO:
-//    MESSAGE "A license for the Translation Manager is not available."
-//       VIEW-AS ALERT-BOX INFORMATION BUTTONS OK.
-//    STOP.
-// END.
 
 RUN adecomm/_setcurs.p ("WAIT":U).
 CREATE WIDGET-POOL.

@@ -7,8 +7,17 @@ build
 # Ignore abl compiled r-code
 *.r
 
+*.pl
+
 # Ignore visual studio code configuration
 .vscode
 
 # ignore clearcase files
-*/.copyarea.db
+.copyarea.db
+
+
+.project
+
+.settings
+
+.propath
