@@ -13,11 +13,22 @@ build
 .vscode
 
 # ignore clearcase files
-.copyarea.db
-
+**/.copyarea.db
 
 .project
 
 .settings
 
 .propath
+
+DBI*
+
+lbi*
+
+rcda*
+
+srt*
+
+.dbconnection
+
+ubpf.config
