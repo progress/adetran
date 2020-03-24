@@ -10,7 +10,7 @@ abl {
 }
 
 def dbdir = "${buildDir}/adetran/data"
-def xlatedb = "${dbdir}/xlatedb.db"
+def xlprojdb = "${dbdir}/xlproj.db"
 def xlkitdb = "${dbdir}/xlkit.db"
 
 task extractADEcomm {
@@ -133,10 +133,10 @@ def indexBuild(String db) {
 }
 
 /**
-create the xlatedb
+create the xlprojdb
  */
-task createXLateDB(type: CreateDatabase) {
-    dbName = "xlatedb"
+task createxlprojdb(type: CreateDatabase) {
+    dbName = "xlproj"
     blockSize = 8
     destDir = "${dbdir}"
 
@@ -144,46 +144,47 @@ task createXLateDB(type: CreateDatabase) {
         mkdir "${dbdir}"
     }
     doLast {
-       convertCodePage(xlatedb)
+       convertCodePage(xlprojdb)
     }    
 }
 
 
 /**
-define connection to xlatedb
+define connection to xlprojdb
  */
-task connectXLateDB(type: DBConnection) {
+task connectxlprojdb(type: DBConnection) {
     mkdir "${dbdir}"
-    dbName = 'xlatedb'
+    dbName = 'xlproj'
+    logicalName = "xlatedb"
     dbDir = "${dbdir}"
-    id = 'xlatedb'
+    id = 'xlproj'
     singleUser = true
 }
 
-task loadTranSchemaToXlateDb(type: LoadSchema)  {
-    dependsOn connectXLateDB
+task loadTranSchemaToxlprojdb(type: LoadSchema)  {
+    dependsOn connectxlprojdb
     source 'data/'
     include '_tran.df'
-    refid = "xlatedb"
+    refid = "xlproj"
 
     doLast {
-        indexBuild(xlatedb)
+        indexBuild(xlprojdb)
     }
 }
 
-task loadKitSchemaToXlateDb(type: LoadSchema)  {
-    dependsOn connectXLateDB
+task loadKitSchemaToxlprojdb(type: LoadSchema)  {
+    dependsOn connectxlprojdb
     source 'data/'
     include 'xlproj.df'
-    refid = "xlatedb"
+    refid = "xlproj"
 }
 
 
 task createXlate () {
-    dependsOn createXLateDB
-    dependsOn loadTranSchemaToXlateDb
-    dependsOn loadKitSchemaToXlateDb
-    dependsOn connectXLateDB
+    dependsOn createxlprojdb
+    dependsOn loadTranSchemaToxlprojdb
+    dependsOn loadKitSchemaToxlprojdb
+    dependsOn connectxlprojdb
 }
 
 
@@ -201,7 +202,7 @@ task compileCode(type: CompileAblTask) {
     propath = files('src/main/abl', "${buildDir}" )
 
     dbConnections << 'xlkit'
-    dbConnections << 'xlatedb'
+    dbConnections << 'xlproj'
 }
 
 task copyImages(type : Copy) {
