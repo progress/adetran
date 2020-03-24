@@ -17,11 +17,11 @@ Use the following command line to perform the build.
 
 ```
 
-Once the source code is built you will find the output in the build directory. The primary build output is build/tranman.pl and build/resources.  The build/resources folder contains the images that are neededd.  The build also generates build/db/kit/kit.db and build/db/xlate/xlatedb.db.
+Once the source code is built you will find the output in the build directory. The primary build output is build/tranman.pl and build/resources.  The build/resources folder contains the images that are neededd.  The build also generates build/adetran/data/kit.db and build/adetran/data/xlatedb.db.
 
 # Running
 
-Since both Translation Manager and Visual Translator are GUI only applications, you will need to compile and build on Windows.  You can run the Visual Translator tool or the Translation Manager application using prowin.  You will need to configure the PROPATH to include both the build/tranman.pl and build/resources folder.  
+Since both Translation Manager and Visual Translator are GUI only applications, you will need to compile and build on Windows.  You can run the Visual Translator tool or the Translation Manager application using prowin.  You will need to configure the PROPATH to include both the build/tranman.pl and build/resources folder.  There are launch scripts that take care of this for you.
 
 You can launch the application using the sample startup programs provided for both Visual Translator and Translation Manager application.  The launcher scripts below configure the PROPATH to include the needed entries.
 
@@ -35,7 +35,7 @@ To launch Translation Manager:
 prowin -p launch_tranman.p
 ```
 
-NOTE: the above wrappers are only for convenience.  They run the translation database in single user mode.
+NOTE: the above wrappers are only for convenience.
 
 # Help
 
