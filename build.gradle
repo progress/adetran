@@ -9,8 +9,9 @@ abl {
     dlcHome = new File("${System.env.DLC}")
 }
 
-def xlatedb = "${buildDir}/db/xlate/xlatedb.db"
-def kitdb = "${buildDir}/db/kit/kit.db"
+def dbdir = "${buildDir}/adetran/data"
+def xlatedb = "${dbdir}/xlatedb.db"
+def xlkitdb = "${dbdir}/xlkit.db"
 
 task extractADEcomm {
 
@@ -62,25 +63,26 @@ task extractADEcomm {
 create kit db
 */
 task createKitDB(type: CreateDatabase) {
-    dbName = "kit"
+    dbName = "xlkit"
     blockSize = 8
-    destDir = "${buildDir}/db/kit"    
+    destDir = "${dbdir}"    
 
     doLast {
-        convertCodePage (kitdb)
+        convertCodePage (xlkitdb)
     }
 }
 
 /**
-define connection to kitdb
+define connection to xlkitdb
  */
 task connectKitDB(type: DBConnection) {
-    dbName = 'kit'
-    dbDir = "${buildDir}/db/kit"
-    id = 'kit'
+    dbName = 'xlkit'
+    dbDir = "${dbdir}"
+    id = 'xlkit'
     singleUser = true
+    logicalName = 'kit'
     doFirst {
-        mkdir "${buildDir}/db/kit"
+        mkdir "${dbdir}"
     }
 }
 
@@ -88,10 +90,10 @@ task loadTranSchemaToKitDb(type: LoadSchema)  {
     dependsOn connectKitDB
     source 'data/'
     include '_tran.df'
-    refid = "kit"
+    refid = "xlkit"
 
     doLast {
-        indexBuild(kitdb)
+        indexBuild(xlkitdb)
     }
     
 }
@@ -100,7 +102,7 @@ task loadKitSchemaToKitDb(type: LoadSchema)  {
     dependsOn connectKitDB
     source 'data/'
     include 'xlkit.df'
-    refid = "kit"
+    refid = "xlkit"
 }
 
 task createKit() {
@@ -136,10 +138,10 @@ create the xlatedb
 task createXLateDB(type: CreateDatabase) {
     dbName = "xlatedb"
     blockSize = 8
-    destDir = "${buildDir}/db/xlate"
+    destDir = "${dbdir}"
 
     doFirst {
-        mkdir "${buildDir}/db/xlate"
+        mkdir "${dbdir}"
     }
     doLast {
        convertCodePage(xlatedb)
@@ -151,10 +153,10 @@ task createXLateDB(type: CreateDatabase) {
 define connection to xlatedb
  */
 task connectXLateDB(type: DBConnection) {
-    mkdir "${buildDir}/db/xlate"
+    mkdir "${dbdir}"
     dbName = 'xlatedb'
-    dbDir = "${buildDir}/db/xlate"
-    id = 'xlate'
+    dbDir = "${dbdir}"
+    id = 'xlatedb'
     singleUser = true
 }
 
@@ -162,7 +164,7 @@ task loadTranSchemaToXlateDb(type: LoadSchema)  {
     dependsOn connectXLateDB
     source 'data/'
     include '_tran.df'
-    refid = "xlate"
+    refid = "xlatedb"
 
     doLast {
         indexBuild(xlatedb)
@@ -173,7 +175,7 @@ task loadKitSchemaToXlateDb(type: LoadSchema)  {
     dependsOn connectXLateDB
     source 'data/'
     include 'xlproj.df'
-    refid = "xlate"
+    refid = "xlatedb"
 }
 
 
@@ -198,8 +200,8 @@ task compileCode(type: CompileAblTask) {
     destinationDir = file("${buildDir}/rcode")
     propath = files('src/main/abl', "${buildDir}" )
 
-    dbConnections << 'kit'
-    dbConnections << 'xlate'
+    dbConnections << 'xlkit'
+    dbConnections << 'xlatedb'
 }
 
 task copyImages(type : Copy) {
