@@ -61,4 +61,6 @@ The code in this repository is based on the original adetran source. There are s
 Because of license requirements some functionality won't work and would need to be replaced.  
 
 * The glossaries that were included in the data folder are not present. You will need to provide your own glossaries of standard terms.
-* The export and import of translation kits is missing a critical .dll. The code that performs this relies on a C based library that is not shipped with OpenEdge unless you have a Translation Manager or Visual Translator license. The code for that library is not part of this repository. It is left as an exercise to the reader to find a solution to this. The Microsoft .NET [zip classes](https://docs.microsoft.com/en-us/dotnet/api/system.io.compression.zipfile?view=netframework-4.8) are one possible solution.  Unfortunately, Microsoft did not implement zip file comment support in their library so this may be an incomplete solution. 
+* The export and import of translation kits is missing a critical .dll. The code that performs this relies on a C based library that is not shipped with OpenEdge unless you have a Translation Manager or Visual Translator license. 
+
+It is left as an exercise to the reader to find a solution to this. The Microsoft .NET [zip classes](https://docs.microsoft.com/en-us/dotnet/api/system.io.compression.zipfile?view=netframework-4.8) are one possible solution.  Unfortunately, Microsoft did not implement zip file comment support in their library so this may be an incomplete solution. 
