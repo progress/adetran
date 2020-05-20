@@ -1092,7 +1092,7 @@ ON CHOOSE OF BtnVT IN FRAME MainFrame DO:
   ELSE DO:
     RUN adecomm/_setcurs.p ("WAIT":U).
     /* RUN adetran/pm/_reports.w. */
-    RUN _RunTool( INPUT "_vtran.p").
+    RUN _RunTool( INPUT "wrappers/_vtran.p").
     RUN ResetMain.
   END.
 END.
