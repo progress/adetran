@@ -4,7 +4,7 @@
 &Scoped-define FRAME-NAME ZipFrame
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS ZipFrame 
 /*********************************************************************
-* Copyright (C) 2000,2012-2013 by Progress Software Corporation ("PSC"),  *
+* Copyright (C) 2000,2020,2012-2013 by Progress Software Corporation ("PSC"),  *
 * 14 Oak Park, Bedford, MA 01730, and other contributors as listed   *
 * below.  All Rights Reserved.                                       *
 *                                                                    *
