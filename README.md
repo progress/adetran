@@ -55,7 +55,7 @@ The code in this repository is based on the original adetran source. There are s
 * The license checks in Translation Manager and Visual Translator have been removed. Part of this removal triggered some small adjustments to the menu sensitivity code.
 * Some code reorganization has been done to better fit with the Gradle defaults.
 * The license for the code in this repository is under Apache 2.0, rather than the Possenet public license. You can still access the possenet version of the adetran code from the Progress communities website if you so desire.
-* The export of translation kits reliees on a library that is no longer shipped with OpenEdge 12.0. This library code is not part of this repository.
+* The export of translation kits relies on a library that is no longer shipped with OpenEdge 12.0. This library code is not part of this repository.
 * The template glossaries that are originally came from Microsoft have been removed as the license prohibits redistribution.
 * This version has no support from Progress Software.
 
