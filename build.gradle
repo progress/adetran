@@ -2,7 +2,7 @@
 import oe.espresso.latte.*
 
 plugins {
-    id 'oe.espresso.latte' version '0.2.6'
+    id 'oe.espresso.latte' version '0.2.9'
 }
 
 abl {
