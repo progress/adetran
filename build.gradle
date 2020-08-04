@@ -2,11 +2,12 @@
 import oe.espresso.latte.*
 
 plugins {
-    id 'oe.espresso.latte' version '0.2.9'
+    id 'oe.espresso.latte' version '0.3.1'
 }
 
 abl {
     dlcHome = new File("${System.env.DLC}")
+    graphicalMode = true
 }
 
 def dbdir = "${buildDir}/adetran/data"
@@ -197,7 +198,6 @@ task compileCode(type: CompileAblTask) {
     include('**/*.p')
     include('**/*.w')
     compileUnderscore = true
-    graphicalMode = true
     destinationDir = file("${buildDir}/rcode")
     propath = files('src/main/abl', "${buildDir}" )
 
@@ -241,7 +241,6 @@ task runVisualTranslator(type : RunAbl) {
     dependsOn createPL
     procedure = 'adetran/wrappers/_tran.p'
     propath = files("${buildDir}/rcode" )
-    graphicalMode = true
 
     dbConnections << 'kit'
     dbConnections << 'xlate'
