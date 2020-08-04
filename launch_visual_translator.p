@@ -1,9 +1,6 @@
-// this is a sample  launcher for visual translator.
+// this is a sample launcher for visual translator.
 
-PROPATH = "build/lib/tranman.pl,build/resources," + PROPATH .
-
-connect value("-db build/db/kit/kit.db -1").
-connect value("-db build/db/xlate/xlatedb.db -1").
+PROPATH = "build,build\lib\tranman.pl,build\resources," + PROPATH .
 
 run wrappers/_vtran.p.
 

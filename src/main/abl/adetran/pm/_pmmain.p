@@ -1,6 +1,6 @@
 /*********************************************************************
-* Copyright (C) 2000,2012,2020 by Progress Software Corporation. All rights    *
-* reserved. Prior versions of this work may contain portions         *
+* Copyright (C) 2000,2012,2020 by Progress Software Corporation. All *
+* rights reserved. Prior versions of this work may contain portions  *
 * contributed by participants of Possenet.                           *
 *                                                                    *
 *********************************************************************/

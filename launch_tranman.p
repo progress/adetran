@@ -1,6 +1,6 @@
-// this is a sample  launcher for tranman.  You can run this 
+// this is a sample  launcher for tranman.
 
-PROPATH = "build/lib/tranman.pl,build/resources," + PROPATH .
+PROPATH = "build,build\lib\tranman.pl,build\resources," + PROPATH .
 
 run wrappers/_tran.p.
 
