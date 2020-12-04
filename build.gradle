@@ -36,7 +36,7 @@ task extractADEcomm {
         'adecomm/adefext.i'
     ]
 
-    inputs.files file("${System.env.DLC}/src/adecomm.pl")
+    inputs.files file("${abl.dlcHome}/src/adecomm.pl")
 
     extractables.each {
         outputs.files file("${buildDir}/adecomm/toolmenu.i")
@@ -54,7 +54,7 @@ task extractADEcomm {
             if (!new File("${buildDir}/${fileName}").exists()) {
                 exec {
                     workingDir "${buildDir}"
-                    commandLine "${System.env.DLC}/bin/prolib", "${System.env.DLC}/src/adecomm.pl", '-extract', fileName
+                    commandLine "${abl.dlcHome}/bin/prolib", "${abl.dlcHome}/src/adecomm.pl", '-extract', fileName
                 }
             }
         }
@@ -123,7 +123,7 @@ def convertCodePage(String db) {
 
     exec {
         workingDir = "${buildDir}/temp"
-        commandLine "${System.env.DLC}/bin/_proutil", "-z3", db, "-C", "convchar", "convert", "undefined", "-G", "0"
+        commandLine "${abl.dlcHome}/bin/_proutil", "-z3", db, "-C", "convchar", "convert", "undefined", "-G", "0"
         standardInput = new ByteArrayInputStream("y\r\n".getBytes())
     }
 }
@@ -133,7 +133,7 @@ def indexBuild(String db) {
 
     exec {
         workingDir = "${buildDir}/temp"
-        commandLine "${System.env.DLC}/bin/_proutil", "-z3", db, "-C", "idxbuild", "all", "-G", "0"
+        commandLine "${abl.dlcHome}/bin/_proutil", "-z3", db, "-C", "idxbuild", "all", "-G", "0"
     }
 }
 
