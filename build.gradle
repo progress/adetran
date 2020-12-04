@@ -8,7 +8,6 @@ plugins {
 abl {
     dlcHome = new File("${System.env.DLC}")
     avmOptions {
-        tty.enabled = false
         startupParameters = "-zn"
     }
 
@@ -194,7 +193,7 @@ task compileCode(type: ABLCompile) {
     dependsOn createKit 
     dependsOn createXlate
     dependsOn extractADEcomm
-    wrkDir = "${projectDir}/src/main/abl"
+    source 'src/main/abl"'
     include '**/*.p',  '**/*.w'
     rcodeDir = "${buildDir}/rcode"
     propath  "${projectDir}/src/main/abl", "${buildDir}"
