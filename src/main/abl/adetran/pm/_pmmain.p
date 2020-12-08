@@ -1667,9 +1667,6 @@ PROCEDURE SetSensitivity:
   DO WITH FRAME MainFrame:
   /* Note: cut/copy/paste are handled differently  */
 
-  if mnu_vtran_wh <> ? then do:
-    assign BtnVT:SENSITIVE = mnu_vtran_wh:SENSITIVE.
-  end.
 
   IF CONNECTED("xlatedb":U) THEN
     RUN adetran/pm/_getcnt.p
