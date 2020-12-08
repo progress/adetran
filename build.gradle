@@ -1,13 +1,19 @@
 
-import oe.espresso.latte.*
+import com.progress.gradle.abl.tasks.*
 
 plugins {
-    id 'oe.espresso.latte' version '0.3.1'
+    id 'progress.openedge.abl-base' version '1.0.0'
 }
 
 abl {
     dlcHome = new File("${System.env.DLC}")
-    graphicalMode = true
+    avmOptions {
+        startupParameters = "-zn"
+        tty {
+            enabled = false
+        }
+    }
+
 }
 
 def dbdir = "${buildDir}/adetran/data"
@@ -33,7 +39,7 @@ task extractADEcomm {
         'adecomm/adefext.i'
     ]
 
-    inputs.files file("${System.env.DLC}/src/adecomm.pl")
+    inputs.files file("${abl.dlcHome}/src/adecomm.pl")
 
     extractables.each {
         outputs.files file("${buildDir}/adecomm/toolmenu.i")
@@ -51,7 +57,7 @@ task extractADEcomm {
             if (!new File("${buildDir}/${fileName}").exists()) {
                 exec {
                     workingDir "${buildDir}"
-                    commandLine "${System.env.DLC}/bin/prolib", "${System.env.DLC}/src/adecomm.pl", '-extract', fileName
+                    commandLine "${abl.dlcHome}/bin/prolib", "${abl.dlcHome}/src/adecomm.pl", '-extract', fileName
                 }
             }
         }
@@ -63,10 +69,14 @@ task extractADEcomm {
 /**
 create kit db
 */
-task createKitDB(type: CreateDatabase) {
+task createKitDB(type: CreateDB) {
     dbName = "xlkit"
     blockSize = 8
-    destDir = "${dbdir}"    
+    outputDir = "${dbdir}" 
+
+    doFirst {
+        mkdir "${dbdir}"
+    }
 
     doLast {
         convertCodePage (xlkitdb)
@@ -77,33 +87,30 @@ task createKitDB(type: CreateDatabase) {
 define connection to xlkitdb
  */
 task connectKitDB(type: DBConnection) {
-    dbName = 'xlkit'
-    dbDir = "${dbdir}"
+    dbName = "${dbdir}/xlkit"
+    connectionParameters = "-1 -ld kit"
     id = 'xlkit'
-    singleUser = true
-    logicalName = 'kit'
     doFirst {
         mkdir "${dbdir}"
     }
 }
 
-task loadTranSchemaToKitDb(type: LoadSchema)  {
+task loadTranSchemaToKitDb(type: LoadDBSchema)  {
     dependsOn connectKitDB
-    source 'data/'
-    include '_tran.df'
-    refid = "xlkit"
+    source 'data/_tran.df'
+
+    dbConnectionReferenceId "xlkit"
 
     doLast {
         indexBuild(xlkitdb)
     }
-    
+
 }
 
-task loadKitSchemaToKitDb(type: LoadSchema)  {
+task loadKitSchemaToKitDb(type: LoadDBSchema)  {
     dependsOn connectKitDB
-    source 'data/'
-    include 'xlkit.df'
-    refid = "xlkit"
+    source 'data/xlkit.df'
+    dbConnectionReferenceId "xlkit"
 }
 
 task createKit() {
@@ -119,7 +126,7 @@ def convertCodePage(String db) {
 
     exec {
         workingDir = "${buildDir}/temp"
-        commandLine "${System.env.DLC}/bin/_proutil", "-z3", db, "-C", "convchar", "convert", "undefined", "-G", "0"
+        commandLine "${abl.dlcHome}/bin/_proutil", "-z3", db, "-C", "convchar", "convert", "undefined", "-G", "0"
         standardInput = new ByteArrayInputStream("y\r\n".getBytes())
     }
 }
@@ -129,17 +136,17 @@ def indexBuild(String db) {
 
     exec {
         workingDir = "${buildDir}/temp"
-        commandLine "${System.env.DLC}/bin/_proutil", "-z3", db, "-C", "idxbuild", "all", "-G", "0"
+        commandLine "${abl.dlcHome}/bin/_proutil", "-z3", db, "-C", "idxbuild", "all", "-G", "0"
     }
 }
 
 /**
 create the xlprojdb
  */
-task createxlprojdb(type: CreateDatabase) {
+task createxlprojdb(type: CreateDB) {
     dbName = "xlproj"
     blockSize = 8
-    destDir = "${dbdir}"
+    outputDir = "${dbdir}"
 
     doFirst {
         mkdir "${dbdir}"
@@ -154,30 +161,25 @@ task createxlprojdb(type: CreateDatabase) {
 define connection to xlprojdb
  */
 task connectxlprojdb(type: DBConnection) {
-    mkdir "${dbdir}"
-    dbName = 'xlproj'
-    logicalName = "xlatedb"
-    dbDir = "${dbdir}"
+    connectionParameters = "-1 -ld xlatedb"
+    dbName = "${dbdir}/xlproj"
     id = 'xlproj'
-    singleUser = true
 }
 
-task loadTranSchemaToxlprojdb(type: LoadSchema)  {
+task loadTranSchemaToxlprojdb(type: LoadDBSchema)  {
     dependsOn connectxlprojdb
-    source 'data/'
-    include '_tran.df'
-    refid = "xlproj"
+    source 'data/_tran.df'
+    dbConnectionReferenceId "xlproj"
 
     doLast {
         indexBuild(xlprojdb)
     }
 }
 
-task loadKitSchemaToxlprojdb(type: LoadSchema)  {
+task loadKitSchemaToxlprojdb(type: LoadDBSchema)  {
     dependsOn connectxlprojdb
-    source 'data/'
-    include 'xlproj.df'
-    refid = "xlproj"
+    source 'data/xlproj.df'
+    dbConnectionReferenceId "xlproj"
 }
 
 
@@ -190,19 +192,18 @@ task createXlate () {
 
 
 
-task compileCode(type: CompileAblTask) {
+task compileCode(type: ABLCompile) {
     dependsOn createKit 
     dependsOn createXlate
     dependsOn extractADEcomm
-    source('src/main/abl')
-    include('**/*.p')
-    include('**/*.w')
-    compileUnderscore = true
-    destinationDir = file("${buildDir}/rcode")
-    propath = files('src/main/abl', "${buildDir}" )
+    source 'src/main/abl'
+    include '**/*.p',  '**/*.w'
+    rcodeDir = "${buildDir}/rcode"
+    propath  "${projectDir}/src/main/abl", "${buildDir}"
+    dbConnectionReferenceId 'xlkit'
+    dbConnectionReferenceId 'xlproj'
 
-    dbConnections << 'xlkit'
-    dbConnections << 'xlproj'
+
 }
 
 task copyImages(type : Copy) {
@@ -223,12 +224,12 @@ task copyLabels(type : Copy) {
     }    
 }
 
-task createPL(type: CreateProcedureLibrary) {
+task createPL(type: PL) {
 
     dependsOn compileCode
-    destFile = "${buildDir}/lib/tranman.pl"
-    baseDir = "${buildDir}/rcode"
-    includes= "**/*.r"
+    plFile = "${buildDir}/lib/tranman.pl"
+    from "${buildDir}/rcode"
+    include "**/*.r"
 
     doFirst {
         mkdir "${buildDir}/lib"
@@ -236,19 +237,7 @@ task createPL(type: CreateProcedureLibrary) {
 
 }
 
-
-task runVisualTranslator(type : RunAbl) {
-    dependsOn createPL
-    procedure = 'adetran/wrappers/_tran.p'
-    propath = files("${buildDir}/rcode" )
-
-    dbConnections << 'kit'
-    dbConnections << 'xlate'
-
-}
-
 task build {
-    dependsOn compileCode
     dependsOn copyImages
     dependsOn copyLabels
     dependsOn createPL
