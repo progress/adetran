@@ -9,6 +9,9 @@ abl {
     dlcHome = new File("${System.env.DLC}")
     avmOptions {
         startupParameters = "-zn"
+        tty {
+            enabled = false
+        }
     }
 
 }
@@ -85,7 +88,7 @@ define connection to xlkitdb
  */
 task connectKitDB(type: DBConnection) {
     dbName = "${dbdir}/xlkit"
-    connectionParameters = "-1 -ld logicalName"
+    connectionParameters = "-1 -ld kit"
     id = 'xlkit'
     doFirst {
         mkdir "${dbdir}"
@@ -193,12 +196,13 @@ task compileCode(type: ABLCompile) {
     dependsOn createKit 
     dependsOn createXlate
     dependsOn extractADEcomm
-    source 'src/main/abl"'
+    source 'src/main/abl'
     include '**/*.p',  '**/*.w'
     rcodeDir = "${buildDir}/rcode"
     propath  "${projectDir}/src/main/abl", "${buildDir}"
     dbConnectionReferenceId 'xlkit'
     dbConnectionReferenceId 'xlproj'
+
 
 }
 
@@ -233,19 +237,7 @@ task createPL(type: PL) {
 
 }
 
-
-task runVisualTranslator(type : ABLRun) {
-    dependsOn createPL
-    procedure 'adetran/wrappers/_tran.p'
-    propath "${buildDir}/rcode"
-
-    dbConnectionReferenceId 'kit'
-    dbConnectionReferenceId 'xlate'
-
-}
-
 task build {
-    dependsOn compileCode
     dependsOn copyImages
     dependsOn copyLabels
     dependsOn createPL
